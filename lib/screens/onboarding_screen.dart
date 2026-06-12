@@ -15,12 +15,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
 
   final List<_OnboardingData> _pages = [
-    _OnboardingData(
+    const _OnboardingData(
       title: 'Catat Tradingmu\nDengan Mudah!',
       description: 'Pencatatan mudah dengan penggunaan\nyang ramah pengguna.',
       buttonLabel: 'LANJUTKAN',
     ),
-    _OnboardingData(
+    const _OnboardingData(
       title: 'Trading Lebih\nDisiplin!',
       description: 'Terapkan rencana tradingmu\ndengan disiplin.',
       buttonLabel: 'MULAI JURNALCUAN',

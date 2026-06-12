@@ -11,10 +11,10 @@ class AlarmScreen extends StatefulWidget {
 
 class _AlarmScreenState extends State<AlarmScreen> {
   final List<_AlarmItem> _alarms = [
-    _AlarmItem(label: 'Sesi London Buka', time: TimeOfDay(hour: 14, minute: 0), active: true),
-    _AlarmItem(label: 'Sesi New York Buka', time: TimeOfDay(hour: 19, minute: 30), active: true),
-    _AlarmItem(label: 'Review Jurnal Harian', time: TimeOfDay(hour: 21, minute: 0), active: false),
-    _AlarmItem(label: 'Sesi Asia Buka', time: TimeOfDay(hour: 7, minute: 0), active: false),
+    _AlarmItem(label: 'Sesi London Buka', time: const TimeOfDay(hour: 14, minute: 0), active: true),
+    _AlarmItem(label: 'Sesi New York Buka', time: const TimeOfDay(hour: 19, minute: 30), active: true),
+    _AlarmItem(label: 'Review Jurnal Harian', time: const TimeOfDay(hour: 21, minute: 0), active: false),
+    _AlarmItem(label: 'Sesi Asia Buka', time: const TimeOfDay(hour: 7, minute: 0), active: false),
   ];
 
   Future<void> _addAlarm() async {
