@@ -94,11 +94,10 @@ class _OnboardingPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            const Center(
-              child: Icon(
-                Icons.trending_up_rounded,
-                color: AppTheme.primaryGreen,
-                size: 32,
+            Center(
+              child: Image.asset(
+                'assets/images/logo+nama_apikasi_jurnalcuan.png',
+                height: 40,
               ),
             ),
             const Spacer(),

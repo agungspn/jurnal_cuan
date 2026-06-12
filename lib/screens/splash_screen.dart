@@ -140,33 +140,11 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppTheme.primaryGreen,
-                                Color(0xFF00956E),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(28),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.primaryGreen.withOpacity(0.4),
-                                blurRadius: 30,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.candlestick_chart_rounded,
-                            size: 52,
-                            color: AppTheme.primaryDark,
-                          ),
-                        ),
+                        Image.asset(
+                        'assets/images/logo_jurnalcuan.jpeg',
+                        width: 140,
+                        height: 140,
+                      ),
                         const SizedBox(height: 24),
                         Text(
                           'JurnalCuan',
