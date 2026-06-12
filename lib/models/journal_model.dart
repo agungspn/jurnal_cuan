@@ -3,23 +3,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum TradeResult { profit, loss, breakeven }
 
 class JournalEntry {
-  final String? screenshotBase64;
   final String? id;
   final String userId;
-  final String saham; // Kode saham / pair
+  final String saham;
   final String? deskripsi;
   final double hargaBeli;
   final double hargaJual;
   final int lot;
   final DateTime tanggal;
   final TradeResult result;
-  final double pnl; // Profit & Loss
+  final double pnl;
   final double pnlPercent;
-  final String? screenshotUrl;
-  final String? setup; // Strategi yang dipakai
-  final String? emotion; // Emosi saat trading
+  final String? screenshotBase64; // <-- simpan sebagai Base64
+  final String? setup;
+  final String? emotion;
   final DateTime createdAt;
-  
 
   JournalEntry({
     this.id,
@@ -33,14 +31,12 @@ class JournalEntry {
     required this.result,
     required this.pnl,
     required this.pnlPercent,
-    this.screenshotUrl,
     this.screenshotBase64,
     this.setup,
     this.emotion,
     required this.createdAt,
   });
 
-  // Hitung PnL otomatis (untuk saham Indonesia: 1 lot = 100 lembar)
   static double hitungPnL(double hargaBeli, double hargaJual, int lot) {
     return (hargaJual - hargaBeli) * lot * 100;
   }
@@ -55,7 +51,6 @@ class JournalEntry {
     return TradeResult.breakeven;
   }
 
-  // Convert to Firestore Map
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
@@ -68,15 +63,13 @@ class JournalEntry {
       'result': result.name,
       'pnl': pnl,
       'pnlPercent': pnlPercent,
-      'screenshotUrl': screenshotUrl,
+      'screenshotBase64': screenshotBase64,
       'setup': setup,
       'emotion': emotion,
       'createdAt': Timestamp.fromDate(createdAt),
-      'screenshotBase64': screenshotBase64,
     };
   }
 
-  // Buat dari Firestore Document
   factory JournalEntry.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return JournalEntry(
@@ -94,12 +87,10 @@ class JournalEntry {
       ),
       pnl: (data['pnl'] as num).toDouble(),
       pnlPercent: (data['pnlPercent'] as num).toDouble(),
-      screenshotUrl: data['screenshotUrl'],
       screenshotBase64: data['screenshotBase64'],
       setup: data['setup'],
       emotion: data['emotion'],
       createdAt: (data['createdAt'] as Timestamp).toDate(),
     );
   }
-  
 }

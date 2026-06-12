@@ -30,8 +30,15 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1 # Cek versi terbaru di pub.dev
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+
+flutter_launcher_icons:
+  android: "launcher_icon" 
+  # 2. Ubah ios menjadi false agar tidak error mencari folder iOS
+  ios: false 
+  image_path: "assets/images/logo_jurnalcuan.jpeg"

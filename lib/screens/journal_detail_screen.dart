@@ -21,8 +21,7 @@ class JournalDetailScreen extends StatelessWidget {
             ? AppTheme.lossRed
             : AppTheme.textSecondary;
 
-    final currFmt = NumberFormat.currency(
-        locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currFmt = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
@@ -30,27 +29,17 @@ class JournalDetailScreen extends StatelessWidget {
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded,
-              color: AppTheme.textPrimary),
+          icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          entry.saham,
-          style: GoogleFonts.plusJakartaSans(
-            fontWeight: FontWeight.w700,
-            color: AppTheme.textPrimary,
-          ),
-        ),
+        title: Text(entry.saham,
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: AppTheme.textPrimary)),
         actions: [
-          // Tombol edit
           IconButton(
-            icon: const Icon(Icons.edit_rounded,
-                color: AppTheme.textPrimary),
+            icon: const Icon(Icons.edit_rounded, color: AppTheme.textPrimary),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => InputJournalScreen(editEntry: entry),
-              ),
+              MaterialPageRoute(builder: (_) => InputJournalScreen(editEntry: entry)),
             ),
           ),
         ],
@@ -60,7 +49,7 @@ class JournalDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // === HASIL TRADE ===
+            // HASIL TRADE
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -72,48 +61,32 @@ class JournalDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Icon(
-                    isProfit
-                        ? Icons.trending_up_rounded
-                        : isLoss
-                            ? Icons.trending_down_rounded
-                            : Icons.trending_flat_rounded,
-                    color: resultColor,
-                    size: 36,
+                    isProfit ? Icons.trending_up_rounded
+                        : isLoss ? Icons.trending_down_rounded
+                        : Icons.trending_flat_rounded,
+                    color: resultColor, size: 36,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    (entry.pnl >= 0 ? '+' : '') +
-                        currFmt.format(entry.pnl),
+                    (entry.pnl >= 0 ? '+' : '') + currFmt.format(entry.pnl),
                     style: GoogleFonts.plusJakartaSans(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: resultColor,
-                    ),
+                      fontSize: 28, fontWeight: FontWeight.w800, color: resultColor),
                   ),
                   Text(
                     '${entry.pnlPercent >= 0 ? '+' : ''}${entry.pnlPercent.toStringAsFixed(2)}%',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
-                      color: resultColor.withOpacity(0.8),
-                    ),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 14, color: resultColor.withOpacity(0.8)),
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
                       color: resultColor.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(
-                      entry.result.name.toUpperCase(),
+                    child: Text(entry.result.name.toUpperCase(),
                       style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: resultColor,
-                        letterSpacing: 1,
-                      ),
-                    ),
+                        fontSize: 11, fontWeight: FontWeight.w700,
+                        color: resultColor, letterSpacing: 1)),
                   ),
                 ],
               ),
@@ -121,7 +94,7 @@ class JournalDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // === DETAIL GRID ===
+            // DETAIL GRID
             _sectionTitle('Detail Trade'),
             const SizedBox(height: 10),
             Container(
@@ -134,23 +107,20 @@ class JournalDetailScreen extends StatelessWidget {
                 children: [
                   _detailRow('Kode Saham', entry.saham),
                   _divider(),
-                  _detailRow('Harga Beli',
-                      currFmt.format(entry.hargaBeli)),
+                  _detailRow('Harga Beli', currFmt.format(entry.hargaBeli)),
                   _divider(),
-                  _detailRow('Harga Jual',
-                      currFmt.format(entry.hargaJual)),
+                  _detailRow('Harga Jual', currFmt.format(entry.hargaJual)),
                   _divider(),
                   _detailRow('Jumlah Lot', '${entry.lot} lot'),
                   _divider(),
-                  _detailRow('Tanggal',
-                      DateFormat('dd MMMM yyyy').format(entry.tanggal)),
+                  _detailRow('Tanggal', DateFormat('dd MMMM yyyy').format(entry.tanggal)),
                 ],
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // === SETUP & EMOSI ===
+            // SETUP & EMOSI
             if (entry.setup != null || entry.emotion != null) ...[
               _sectionTitle('Setup & Psikologi'),
               const SizedBox(height: 10),
@@ -166,17 +136,15 @@ class JournalDetailScreen extends StatelessWidget {
                       _detailRow('Setup', entry.setup!),
                       if (entry.emotion != null) _divider(),
                     ],
-                    if (entry.emotion != null)
-                      _detailRow('Emosi', entry.emotion!),
+                    if (entry.emotion != null) _detailRow('Emosi', entry.emotion!),
                   ],
                 ),
               ),
               const SizedBox(height: 20),
             ],
 
-            // === CATATAN ===
-            if (entry.deskripsi != null &&
-                entry.deskripsi!.isNotEmpty) ...[
+            // CATATAN
+            if (entry.deskripsi != null && entry.deskripsi!.isNotEmpty) ...[
               _sectionTitle('Catatan / Analisa'),
               const SizedBox(height: 10),
               Container(
@@ -187,29 +155,34 @@ class JournalDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppTheme.borderColor),
                 ),
-                child: Text(
-                  entry.deskripsi!,
+                child: Text(entry.deskripsi!,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
-                    color: AppTheme.textPrimary,
-                    height: 1.6,
-                  ),
-                ),
+                    fontSize: 14, color: AppTheme.textPrimary, height: 1.6)),
               ),
               const SizedBox(height: 20),
             ],
 
-            // === SCREENSHOT ===
+            // SCREENSHOT - tampil dari Base64
             if (entry.screenshotBase64 != null) ...[
               _sectionTitle('Screenshot Chart'),
               const SizedBox(height: 10),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Image.memory(
-                  base64Decode(entry.screenshotBase64!),
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+              GestureDetector(
+                // Tap untuk fullscreen
+                onTap: () => _showFullscreenImage(context, entry.screenshotBase64!),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.memory(
+                    base64Decode(entry.screenshotBase64!),
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
+              ),
+              const SizedBox(height: 8),
+              Center(
+                child: Text('Tap foto untuk fullscreen',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11, color: AppTheme.textSecondary)),
               ),
               const SizedBox(height: 20),
             ],
@@ -221,15 +194,36 @@ class JournalDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _sectionTitle(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.plusJakartaSans(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
-        color: AppTheme.textSecondary,
+  void _showFullscreenImage(BuildContext context, String base64) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            iconTheme: const IconThemeData(color: Colors.white),
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              // Bisa zoom & pan
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Image.memory(
+                base64Decode(base64),
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ),
       ),
     );
+  }
+
+  Widget _sectionTitle(String title) {
+    return Text(title,
+      style: GoogleFonts.plusJakartaSans(
+        fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textSecondary));
   }
 
   Widget _detailRow(String label, String value) {
@@ -238,29 +232,17 @@ class JournalDetailScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
+          Text(label,
+            style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppTheme.textSecondary)),
+          Text(value,
             style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              color: AppTheme.textSecondary,
-            ),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
-            ),
-          ),
+              fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
         ],
       ),
     );
   }
 
   Widget _divider() => Container(
-        height: 0.5,
-        color: AppTheme.borderColor,
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-      );
+    height: 0.5, color: AppTheme.borderColor,
+    margin: const EdgeInsets.symmetric(horizontal: 16));
 }
