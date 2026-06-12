@@ -168,38 +168,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                         children: [
                           const SizedBox(height: 16),
 
-                          // Logo kecil
-                          Row(
-                            children: [
-                              Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      AppTheme.primaryGreen,
-                                      Color(0xFF00956E)
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(
-                                  Icons.candlestick_chart_rounded,
-                                  color: AppTheme.primaryDark,
-                                  size: 24,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                'JurnalCuan',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppTheme.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
 
                           const SizedBox(height: 48),
 
