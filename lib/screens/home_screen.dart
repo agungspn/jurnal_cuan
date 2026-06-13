@@ -11,6 +11,90 @@ import 'alarm_screen.dart';
 import 'chart_screen.dart';
 import 'journal_detail_screen.dart';
 
+void showJurnalTopPopup(
+  BuildContext context, {
+  required String title,
+  required String message,
+  required IconData icon,
+  required Color color,
+}) {
+  late OverlayEntry overlayEntry;
+
+  overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      top: MediaQuery.of(context).padding.top + 14,
+      left: 16,
+      right: 16,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceDark,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withValues(alpha: 0.65),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      message,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Overlay.of(context).insert(overlayEntry);
+
+  Future.delayed(const Duration(seconds: 2), () {
+    if (overlayEntry.mounted) {
+      overlayEntry.remove();
+    }
+  });
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -35,10 +119,34 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const InputJournalScreen()),
-              ),
+              onPressed: () async {
+                final result = await Navigator.push<String>(
+                  context,
+                  MaterialPageRoute(builder: (_) => const InputJournalScreen()),
+                );
+
+                if (!mounted) return;
+
+                if (result == 'journal_added') {
+                  showJurnalTopPopup(
+                    context,
+                    title: 'Jurnal berhasil ditambahkan',
+                    message: 'Data trading kamu sudah masuk ke jurnal.',
+                    icon: Icons.check_circle_rounded,
+                    color: AppTheme.primaryGreen,
+                  );
+                }
+
+                if (result == 'journal_updated') {
+                  showJurnalTopPopup(
+                    context,
+                    title: 'Jurnal berhasil diperbarui',
+                    message: 'Perubahan data trading sudah disimpan.',
+                    icon: Icons.edit_note_rounded,
+                    color: AppTheme.primaryGreen,
+                  );
+                }
+              },
               backgroundColor: AppTheme.primaryGreen,
               foregroundColor: AppTheme.primaryDark,
               child: const Icon(Icons.add_rounded, size: 28),
@@ -121,7 +229,8 @@ class _NavItem extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                color: selected ? AppTheme.primaryGreen : AppTheme.textSecondary,
+                color:
+                    selected ? AppTheme.primaryGreen : AppTheme.textSecondary,
               ),
             ),
           ],
@@ -167,16 +276,14 @@ class _BerandaPageState extends State<_BerandaPage> {
                 e.tanggal.month == yesterday.month &&
                 e.tanggal.day == yesterday.day;
           case 'This week':
-            final startOfWeek =
-                now.subtract(Duration(days: now.weekday - 1));
-            final startMidnight = DateTime(
-                startOfWeek.year, startOfWeek.month, startOfWeek.day);
+            final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+            final startMidnight =
+                DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
             return !e.tanggal.isBefore(startMidnight);
           case 'Last week':
             final startOfLastWeek =
                 now.subtract(Duration(days: now.weekday + 6));
-            final endOfLastWeek =
-                now.subtract(Duration(days: now.weekday - 1));
+            final endOfLastWeek = now.subtract(Duration(days: now.weekday - 1));
             return e.tanggal.isAfter(DateTime(startOfLastWeek.year,
                     startOfLastWeek.month, startOfLastWeek.day)) &&
                 e.tanggal.isBefore(DateTime(endOfLastWeek.year,
@@ -206,8 +313,8 @@ class _BerandaPageState extends State<_BerandaPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Logout',
-                style: TextStyle(color: AppTheme.lossRed)),
+            child:
+                const Text('Logout', style: TextStyle(color: AppTheme.lossRed)),
           ),
         ],
       ),
@@ -217,6 +324,116 @@ class _BerandaPageState extends State<_BerandaPage> {
       if (!mounted) return;
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+    }
+  }
+
+  Future<void> _confirmDeleteJournal(JournalEntry entry) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.75),
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppTheme.cardDark,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: BorderSide(
+              color: AppTheme.lossRed.withValues(alpha: 0.45),
+            ),
+          ),
+          title: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppTheme.lossRed.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: AppTheme.lossRed,
+                  size: 25,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Hapus jurnal?',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'Anda yakin ingin menghapus jurnal ${entry.saham}? Data yang sudah dihapus tidak bisa dikembalikan.',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              height: 1.5,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                'Batal',
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: AppTheme.lossRed.withValues(alpha: 0.14),
+                foregroundColor: AppTheme.lossRed,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                'Hapus',
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.lossRed,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm != true || entry.id == null) return;
+
+    try {
+      await _journalService.deleteJournal(entry.id!);
+
+      if (!mounted) return;
+
+      showJurnalTopPopup(
+        context,
+        title: 'Jurnal berhasil dihapus',
+        message: 'Data ${entry.saham} sudah dihapus dari jurnal.',
+        icon: Icons.delete_outline_rounded,
+        color: AppTheme.lossRed,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      showJurnalTopPopup(
+        context,
+        title: 'Gagal menghapus jurnal',
+        message: '$e',
+        icon: Icons.error_outline_rounded,
+        color: AppTheme.lossRed,
+      );
     }
   }
 
@@ -267,17 +484,14 @@ class _BerandaPageState extends State<_BerandaPage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: ['Today', 'Yesterday', 'This week', 'Last week']
                     .map((period) => GestureDetector(
-                          onTap: () =>
-                              setState(() => _filterPeriod = period),
+                          onTap: () => setState(() => _filterPeriod = period),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             margin: const EdgeInsets.only(right: 8),
@@ -309,9 +523,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                     .toList(),
               ),
             ),
-
             const SizedBox(height: 16),
-
             Expanded(
               child: StreamBuilder<List<JournalEntry>>(
                 stream: _getFilteredJournals(),
@@ -340,8 +552,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                     itemBuilder: (_, i) => _JournalCard(
                       entry: journals[i],
                       currencyFmt: _currencyFmt,
-                      onDelete: () =>
-                          _journalService.deleteJournal(journals[i].id!),
+                      onDelete: () => _confirmDeleteJournal(journals[i]),
                     ),
                   );
                 },
@@ -477,10 +688,18 @@ class _JournalCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                GestureDetector(
-                  onTap: onDelete,
-                  child: const Icon(Icons.delete_outline_rounded,
-                      size: 18, color: AppTheme.textSecondary),
+                IconButton(
+                  onPressed: onDelete,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 28,
+                    minHeight: 28,
+                  ),
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    size: 18,
+                    color: AppTheme.textSecondary,
+                  ),
                 ),
               ],
             ),
