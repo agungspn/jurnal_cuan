@@ -54,9 +54,9 @@ class JournalDetailScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: resultColor.withOpacity(0.1),
+                color: resultColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: resultColor.withOpacity(0.3)),
+                border: Border.all(color: resultColor.withValues(alpha: 0.3)),
               ),
               child: Column(
                 children: [
@@ -74,13 +74,13 @@ class JournalDetailScreen extends StatelessWidget {
                   ),
                   Text(
                     '${entry.pnlPercent >= 0 ? '+' : ''}${entry.pnlPercent.toStringAsFixed(2)}%',
-                    style: GoogleFonts.plusJakartaSans(fontSize: 14, color: resultColor.withOpacity(0.8)),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 14, color: resultColor.withValues(alpha: 0.8)),
                   ),
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: resultColor.withOpacity(0.15),
+                      color: resultColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(entry.result.name.toUpperCase(),

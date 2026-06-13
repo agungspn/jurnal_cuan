@@ -285,10 +285,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryGreen.withOpacity(0.15),
+                        color: AppTheme.primaryGreen.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: AppTheme.primaryGreen.withOpacity(0.4)),
+                            color: AppTheme.primaryGreen.withValues(alpha: 0.4)),
                       ),
                       child: const Icon(Icons.add_rounded,
                           color: AppTheme.primaryGreen, size: 22),
@@ -313,40 +313,36 @@ class _AlarmScreenState extends State<AlarmScreen> {
             const SizedBox(height: 24),
 
             Expanded(
-              child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: AppTheme.primaryGreen,
+              child: _alarms.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.notifications_off_outlined,
+                              size: 60,
+                              color: AppTheme.textSecondary.withOpacity(0.4)),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Belum ada pengingat',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: AppTheme.textSecondary,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
                     )
-                  : _alarms.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.notifications_off_outlined,
-                                  size: 60,
-                                  color: AppTheme.textSecondary.withOpacity(0.4)),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Belum ada pengingat',
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: AppTheme.textSecondary,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
-                          itemCount: _alarms.length,
-                          itemBuilder: (_, i) => _AlarmCard(
-                            alarm: _alarms[i],
-                            onToggle: (val) => _toggleAlarm(i, val),
-                            onDelete: () => _deleteAlarm(i),
-                          ),
-                        ),
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+                      itemCount: _alarms.length,
+                      itemBuilder: (_, i) => _AlarmCard(
+                        alarm: _alarms[i],
+                        onToggle: (val) =>
+                            setState(() => _alarms[i].active = val),
+                        onDelete: () =>
+                            setState(() => _alarms.removeAt(i)),
+                      ),
+                    ),
             ),
           ],
         ),
@@ -383,7 +379,7 @@ class _AlarmCard extends StatelessWidget {
         color: AppTheme.surfaceDark,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: alarm.isEnabled
+          color: alarm.active
               ? AppTheme.primaryGreen.withOpacity(0.3)
               : AppTheme.borderColor,
         ),
@@ -394,7 +390,7 @@ class _AlarmCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: alarm.isEnabled
+              color: alarm.active
                   ? AppTheme.primaryGreen.withOpacity(0.12)
                   : AppTheme.borderColor.withOpacity(0.3),
               borderRadius: BorderRadius.circular(12),
@@ -441,7 +437,7 @@ class _AlarmCard extends StatelessWidget {
               Switch(
                 value: alarm.isEnabled,
                 onChanged: onToggle,
-                activeColor: AppTheme.primaryGreen,
+                activeThumbColor: AppTheme.primaryGreen,
               ),
               GestureDetector(
                 onTap: onDelete,

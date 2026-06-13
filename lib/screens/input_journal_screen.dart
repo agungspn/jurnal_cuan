@@ -37,13 +37,22 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
   double _pnlPercentPreview = 0;
 
   final List<String> _setupOptions = [
-    'Breakout', 'Pullback', 'Reversal', 'Momentum',
-    'Support/Resistance', 'Gap Up/Down', 'Lainnya',
+    'Breakout',
+    'Pullback',
+    'Reversal',
+    'Momentum',
+    'Support/Resistance',
+    'Gap Up/Down',
+    'Lainnya',
   ];
 
   final List<String> _emotionOptions = [
-    '😌 Tenang & Disiplin', '😤 FOMO', '😰 Panik',
-    '🤑 Greedy', '😕 Ragu-ragu', '💪 Percaya Diri',
+    '😌 Tenang & Disiplin',
+    '😤 FOMO',
+    '😰 Panik',
+    '🤑 Greedy',
+    '😕 Ragu-ragu',
+    '💪 Percaya Diri',
   ];
 
   @override
@@ -149,15 +158,10 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
       }
 
       if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Jurnal berhasil disimpan!'),
-          backgroundColor: AppTheme.primaryGreen,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: const EdgeInsets.all(16),
-        ),
+
+      Navigator.pop(
+        context,
+        widget.editEntry != null ? 'journal_updated' : 'journal_added',
       );
     } catch (e) {
       if (!mounted) return;
@@ -185,7 +189,8 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
   @override
   Widget build(BuildContext context) {
     final isPnlPositive = _pnlPreview >= 0;
-    final currFmt = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currFmt =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     // Tampilkan foto: kalau ada file baru pakai File, kalau edit pakai Base64 lama
     final hasExistingScreenshot = widget.editEntry?.screenshotBase64 != null;
@@ -198,7 +203,8 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary),
+          icon:
+              const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary),
         ),
         title: Text(
           widget.editEntry != null ? 'Edit Trade' : 'Tambah Trade',
@@ -222,30 +228,43 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: (isPnlPositive ? AppTheme.profitGreen : AppTheme.lossRed).withOpacity(0.12),
+                    color: (isPnlPositive
+                            ? AppTheme.profitGreen
+                            : AppTheme.lossRed)
+                        .withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: (isPnlPositive ? AppTheme.profitGreen : AppTheme.lossRed).withOpacity(0.3),
+                      color: (isPnlPositive
+                              ? AppTheme.profitGreen
+                              : AppTheme.lossRed)
+                          .withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
-                        isPnlPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
-                        color: isPnlPositive ? AppTheme.profitGreen : AppTheme.lossRed,
+                        isPnlPositive
+                            ? Icons.trending_up_rounded
+                            : Icons.trending_down_rounded,
+                        color: isPnlPositive
+                            ? AppTheme.profitGreen
+                            : AppTheme.lossRed,
                       ),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Estimasi PnL',
-                              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppTheme.textSecondary)),
+                              style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11, color: AppTheme.textSecondary)),
                           Text(
                             '${isPnlPositive ? '+' : ''}${currFmt.format(_pnlPreview)} (${_pnlPercentPreview.toStringAsFixed(2)}%)',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
-                              color: isPnlPositive ? AppTheme.profitGreen : AppTheme.lossRed,
+                              color: isPnlPositive
+                                  ? AppTheme.profitGreen
+                                  : AppTheme.lossRed,
                             ),
                           ),
                         ],
@@ -260,8 +279,10 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                 controller: _sahamCtrl,
                 textCapitalization: TextCapitalization.characters,
                 style: const TextStyle(color: AppTheme.textPrimary),
-                decoration: const InputDecoration(hintText: 'Contoh: BBCA, GOTO, XAUUSD'),
-                validator: (v) => v == null || v.isEmpty ? 'Kode saham wajib diisi' : null,
+                decoration: const InputDecoration(
+                    hintText: 'Contoh: BBCA, GOTO, XAUUSD'),
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'Kode saham wajib diisi' : null,
               ),
               const SizedBox(height: 16),
 
@@ -275,11 +296,15 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                         _sectionLabel('Harga Beli'),
                         TextFormField(
                           controller: _hargaBeliCtrl,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                          ],
                           style: const TextStyle(color: AppTheme.textPrimary),
                           decoration: const InputDecoration(hintText: '0'),
-                          validator: (v) => v == null || v.isEmpty ? 'Wajib diisi' : null,
+                          validator: (v) =>
+                              v == null || v.isEmpty ? 'Wajib diisi' : null,
                         ),
                       ],
                     ),
@@ -292,11 +317,15 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                         _sectionLabel('Harga Jual'),
                         TextFormField(
                           controller: _hargaJualCtrl,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                          ],
                           style: const TextStyle(color: AppTheme.textPrimary),
                           decoration: const InputDecoration(hintText: '0'),
-                          validator: (v) => v == null || v.isEmpty ? 'Wajib diisi' : null,
+                          validator: (v) =>
+                              v == null || v.isEmpty ? 'Wajib diisi' : null,
                         ),
                       ],
                     ),
@@ -316,10 +345,13 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                         TextFormField(
                           controller: _lotCtrl,
                           keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           style: const TextStyle(color: AppTheme.textPrimary),
                           decoration: const InputDecoration(hintText: '1'),
-                          validator: (v) => v == null || v.isEmpty ? 'Wajib diisi' : null,
+                          validator: (v) =>
+                              v == null || v.isEmpty ? 'Wajib diisi' : null,
                         ),
                       ],
                     ),
@@ -333,7 +365,8 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                         GestureDetector(
                           onTap: _pickDate,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 16),
                             decoration: BoxDecoration(
                               color: AppTheme.cardDark,
                               borderRadius: BorderRadius.circular(14),
@@ -341,10 +374,12 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.calendar_today_outlined, size: 16, color: AppTheme.textSecondary),
+                                const Icon(Icons.calendar_today_outlined,
+                                    size: 16, color: AppTheme.textSecondary),
                                 const SizedBox(width: 8),
                                 Text(DateFormat('dd/MM/yy').format(_tanggal),
-                                    style: const TextStyle(color: AppTheme.textPrimary)),
+                                    style: const TextStyle(
+                                        color: AppTheme.textPrimary)),
                               ],
                             ),
                           ),
@@ -361,23 +396,36 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _setupOptions.map((s) => GestureDetector(
-                  onTap: () => setState(() => _selectedSetup = _selectedSetup == s ? null : s),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: _selectedSetup == s ? AppTheme.primaryGreen.withOpacity(0.2) : AppTheme.cardDark,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: _selectedSetup == s ? AppTheme.primaryGreen : AppTheme.borderColor),
-                    ),
-                    child: Text(s,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        color: _selectedSetup == s ? AppTheme.primaryGreen : AppTheme.textSecondary,
-                        fontWeight: _selectedSetup == s ? FontWeight.w600 : FontWeight.w400,
-                      )),
-                  ),
-                )).toList(),
+                children: _setupOptions
+                    .map((s) => GestureDetector(
+                          onTap: () => setState(() =>
+                              _selectedSetup = _selectedSetup == s ? null : s),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: _selectedSetup == s
+                                  ? AppTheme.primaryGreen.withValues(alpha: 0.2)
+                                  : AppTheme.cardDark,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: _selectedSetup == s
+                                      ? AppTheme.primaryGreen
+                                      : AppTheme.borderColor),
+                            ),
+                            child: Text(s,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: _selectedSetup == s
+                                      ? AppTheme.primaryGreen
+                                      : AppTheme.textSecondary,
+                                  fontWeight: _selectedSetup == s
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                )),
+                          ),
+                        ))
+                    .toList(),
               ),
               const SizedBox(height: 16),
 
@@ -386,22 +434,33 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _emotionOptions.map((e) => GestureDetector(
-                  onTap: () => setState(() => _selectedEmotion = _selectedEmotion == e ? null : e),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: _selectedEmotion == e ? AppTheme.accentGold.withOpacity(0.15) : AppTheme.cardDark,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: _selectedEmotion == e ? AppTheme.accentGold : AppTheme.borderColor),
-                    ),
-                    child: Text(e,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        color: _selectedEmotion == e ? AppTheme.accentGold : AppTheme.textSecondary,
-                      )),
-                  ),
-                )).toList(),
+                children: _emotionOptions
+                    .map((e) => GestureDetector(
+                          onTap: () => setState(() => _selectedEmotion =
+                              _selectedEmotion == e ? null : e),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: _selectedEmotion == e
+                                  ? AppTheme.accentGold.withValues(alpha: 0.15)
+                                  : AppTheme.cardDark,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: _selectedEmotion == e
+                                      ? AppTheme.accentGold
+                                      : AppTheme.borderColor),
+                            ),
+                            child: Text(e,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: _selectedEmotion == e
+                                      ? AppTheme.accentGold
+                                      : AppTheme.textSecondary,
+                                )),
+                          ),
+                        ))
+                    .toList(),
               ),
               const SizedBox(height: 16),
 
@@ -412,7 +471,8 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                 maxLines: 3,
                 style: const TextStyle(color: AppTheme.textPrimary),
                 decoration: const InputDecoration(
-                  hintText: 'Kenapa masuk? Apa yang salah? Pelajaran apa yang didapat?',
+                  hintText:
+                      'Kenapa masuk? Apa yang salah? Pelajaran apa yang didapat?',
                   alignLabelWithHint: true,
                 ),
               ),
@@ -429,7 +489,9 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                     color: AppTheme.cardDark,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: hasAnyScreenshot ? AppTheme.primaryGreen : AppTheme.borderColor,
+                      color: hasAnyScreenshot
+                          ? AppTheme.primaryGreen
+                          : AppTheme.borderColor,
                     ),
                   ),
                   child: hasAnyScreenshot
@@ -439,11 +501,14 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                               borderRadius: BorderRadius.circular(13),
                               child: _screenshotFile != null
                                   // File baru yang baru dipilih
-                                  ? Image.file(_screenshotFile!, width: double.infinity, fit: BoxFit.cover)
+                                  ? Image.file(_screenshotFile!,
+                                      width: double.infinity, fit: BoxFit.cover)
                                   // Base64 dari Firestore (saat edit)
                                   : Image.memory(
-                                      Uri.parse('data:image/jpeg;base64,${widget.editEntry!.screenshotBase64}')
-                                          .data!.contentAsBytes(),
+                                      Uri.parse(
+                                              'data:image/jpeg;base64,${widget.editEntry!.screenshotBase64}')
+                                          .data!
+                                          .contentAsBytes(),
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                     ),
@@ -453,7 +518,8 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                               bottom: 8,
                               right: 8,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: Colors.black54,
                                   borderRadius: BorderRadius.circular(8),
@@ -461,11 +527,12 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.edit, color: Colors.white, size: 14),
+                                    const Icon(Icons.edit,
+                                        color: Colors.white, size: 14),
                                     const SizedBox(width: 4),
                                     Text('Ganti Foto',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11, color: Colors.white)),
+                                        style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 11, color: Colors.white)),
                                   ],
                                 ),
                               ),
@@ -475,10 +542,13 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.add_photo_alternate_outlined, color: AppTheme.textSecondary, size: 28),
+                            const Icon(Icons.add_photo_alternate_outlined,
+                                color: AppTheme.textSecondary, size: 28),
                             const SizedBox(height: 6),
                             Text('Tap untuk upload screenshot',
-                              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppTheme.textSecondary)),
+                                style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13,
+                                    color: AppTheme.textSecondary)),
                           ],
                         ),
                 ),
@@ -490,10 +560,14 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                 onPressed: _isLoading ? null : _save,
                 child: _isLoading
                     ? const SizedBox(
-                        width: 22, height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2.5, color: AppTheme.primaryDark),
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2.5, color: AppTheme.primaryDark),
                       )
-                    : Text(widget.editEntry != null ? 'Simpan Perubahan' : 'Simpan Trade'),
+                    : Text(widget.editEntry != null
+                        ? 'Simpan Perubahan'
+                        : 'Simpan Trade'),
               ),
               const SizedBox(height: 40),
             ],
@@ -507,8 +581,10 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(label,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textSecondary)),
+          style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textSecondary)),
     );
   }
 }

@@ -83,29 +83,21 @@ class _OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF0D3B2E),
-            Color(0xFF081C15),
-            Color(0xFF050D0A),
-            AppTheme.primaryDark,
-          ],
-          stops: [0.0, 0.35, 0.6, 1.0],
-        ),
+    decoration: const BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/images/bg_apk_jurnalcuan.png'),
+        fit: BoxFit.cover,
       ),
+    ),
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            const Center(
-              child: Icon(
-                Icons.trending_up_rounded,
-                color: AppTheme.primaryGreen,
-                size: 32,
+            Center(
+              child: Image.asset(
+                'assets/images/logo+nama_apikasi_jurnalcuan.png',
+                height: 40,
               ),
             ),
             const Spacer(),

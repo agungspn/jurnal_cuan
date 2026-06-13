@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'screens/splash_screen.dart';
@@ -21,6 +22,16 @@ void main() async {
   // setelah aplikasi restart
   final savedAlarms = await alarmService.loadAlarms();
   await alarmService.rescheduleActiveAlarms(savedAlarms);
+
+    // Tambahkan ini
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
 
   runApp(const JurnalCuanApp());
 }
