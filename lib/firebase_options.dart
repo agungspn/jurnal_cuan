@@ -43,7 +43,6 @@ class DefaultFirebaseOptions {
     appId: '1:938019782155:android:7ead75ee7e2a55ca62510e',
     messagingSenderId: '938019782155',
     projectId: 'db-jurnalcuan',
-    authDomain: 'db-jurnalcuan.firebaseapp.com',
     storageBucket: 'db-jurnalcuan.firebasestorage.app',
   );
 

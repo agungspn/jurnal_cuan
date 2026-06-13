@@ -190,7 +190,7 @@ class _ChartScreenState extends State<ChartScreen> {
                           horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
                         color: selected
-                            ? AppTheme.accentGold.withOpacity(0.15)
+                            ? AppTheme.accentGold.withValues(alpha: 0.15)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(

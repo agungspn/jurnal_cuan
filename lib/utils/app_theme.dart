@@ -77,7 +77,7 @@ class AppTheme {
         ),
       ),
       // PERBAIKAN: Menggunakan CardTheme (tanpa kata 'Data' di belakangnya)
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardDark,
         elevation: 0,
         shape: RoundedRectangleBorder(

@@ -254,7 +254,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.08),
+                        color: Colors.white.withValues(alpha: 0.08),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -399,7 +399,7 @@ class _JournalCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: resultColor.withOpacity(0.12),
+                color: resultColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -432,7 +432,7 @@ class _JournalCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 7, vertical: 2),
                         decoration: BoxDecoration(
-                          color: resultColor.withOpacity(0.15),
+                          color: resultColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -473,7 +473,7 @@ class _JournalCard extends StatelessWidget {
                   '${entry.pnlPercent >= 0 ? '+' : ''}${entry.pnlPercent.toStringAsFixed(2)}%',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
-                    color: resultColor.withOpacity(0.7),
+                    color: resultColor.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 4),

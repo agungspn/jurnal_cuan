@@ -222,10 +222,10 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: (isPnlPositive ? AppTheme.profitGreen : AppTheme.lossRed).withOpacity(0.12),
+                    color: (isPnlPositive ? AppTheme.profitGreen : AppTheme.lossRed).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: (isPnlPositive ? AppTheme.profitGreen : AppTheme.lossRed).withOpacity(0.3),
+                      color: (isPnlPositive ? AppTheme.profitGreen : AppTheme.lossRed).withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
@@ -366,7 +366,7 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: _selectedSetup == s ? AppTheme.primaryGreen.withOpacity(0.2) : AppTheme.cardDark,
+                      color: _selectedSetup == s ? AppTheme.primaryGreen.withValues(alpha: 0.2) : AppTheme.cardDark,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: _selectedSetup == s ? AppTheme.primaryGreen : AppTheme.borderColor),
                     ),
@@ -391,7 +391,7 @@ class _InputJournalScreenState extends State<InputJournalScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: _selectedEmotion == e ? AppTheme.accentGold.withOpacity(0.15) : AppTheme.cardDark,
+                      color: _selectedEmotion == e ? AppTheme.accentGold.withValues(alpha: 0.15) : AppTheme.cardDark,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: _selectedEmotion == e ? AppTheme.accentGold : AppTheme.borderColor),
                     ),

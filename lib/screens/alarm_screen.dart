@@ -185,10 +185,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryGreen.withOpacity(0.15),
+                        color: AppTheme.primaryGreen.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                         border: Border.all(
-                            color: AppTheme.primaryGreen.withOpacity(0.4)),
+                            color: AppTheme.primaryGreen.withValues(alpha: 0.4)),
                       ),
                       child: const Icon(Icons.add_rounded,
                           color: AppTheme.primaryGreen, size: 22),
@@ -220,7 +220,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         children: [
                           Icon(Icons.notifications_off_outlined,
                               size: 60,
-                              color: AppTheme.textSecondary.withOpacity(0.4)),
+                              color: AppTheme.textSecondary.withValues(alpha: 0.4)),
                           const SizedBox(height: 16),
                           Text(
                             'Belum ada pengingat',
@@ -285,7 +285,7 @@ class _AlarmCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: alarm.active
-              ? AppTheme.primaryGreen.withOpacity(0.3)
+              ? AppTheme.primaryGreen.withValues(alpha: 0.3)
               : AppTheme.borderColor,
         ),
       ),
@@ -296,8 +296,8 @@ class _AlarmCard extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: alarm.active
-                  ? AppTheme.primaryGreen.withOpacity(0.12)
-                  : AppTheme.borderColor.withOpacity(0.3),
+                  ? AppTheme.primaryGreen.withValues(alpha: 0.12)
+                  : AppTheme.borderColor.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -342,7 +342,7 @@ class _AlarmCard extends StatelessWidget {
               Switch(
                 value: alarm.active,
                 onChanged: onToggle,
-                activeColor: AppTheme.primaryGreen,
+                activeThumbColor: AppTheme.primaryGreen,
               ),
               GestureDetector(
                 onTap: onDelete,
