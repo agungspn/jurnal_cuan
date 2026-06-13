@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_theme.dart';
+import '../models/alarm_model.dart';       // ✅ TAMBAHAN
+import '../services/alarm_service.dart';   // ✅ TAMBAHAN
 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({super.key});
@@ -10,12 +12,31 @@ class AlarmScreen extends StatefulWidget {
 }
 
 class _AlarmScreenState extends State<AlarmScreen> {
-  final List<_AlarmItem> _alarms = [
-    _AlarmItem(label: 'Sesi London Buka', time: const TimeOfDay(hour: 14, minute: 0), active: true),
-    _AlarmItem(label: 'Sesi New York Buka', time: const TimeOfDay(hour: 19, minute: 30), active: true),
-    _AlarmItem(label: 'Review Jurnal Harian', time: const TimeOfDay(hour: 21, minute: 0), active: false),
-    _AlarmItem(label: 'Sesi Asia Buka', time: const TimeOfDay(hour: 7, minute: 0), active: false),
-  ];
+  final AlarmService _alarmService = AlarmService();
+  List<AlarmModel> _alarms = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAlarms();
+  }
+
+  // ──────────────────────────────────────────────
+  // LOAD ALARM DARI STORAGE
+  // ──────────────────────────────────────────────
+
+  Future<void> _loadAlarms() async {
+    final alarms = await _alarmService.loadAlarms();
+    setState(() {
+      _alarms = alarms;
+      _isLoading = false;
+    });
+  }
+
+  // ──────────────────────────────────────────────
+  // TAMBAH ALARM
+  // ──────────────────────────────────────────────
 
   Future<void> _addAlarm() async {
     final labelCtrl = TextEditingController();
@@ -50,24 +71,20 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 style: const TextStyle(color: AppTheme.textPrimary),
                 decoration: InputDecoration(
                   hintText: 'Nama pengingat (contoh: Sesi London)',
-                  hintStyle:
-                      const TextStyle(color: AppTheme.textSecondary),
+                  hintStyle: const TextStyle(color: AppTheme.textSecondary),
                   filled: true,
                   fillColor: AppTheme.surfaceDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: AppTheme.borderColor),
+                    borderSide: const BorderSide(color: AppTheme.borderColor),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: AppTheme.borderColor),
+                    borderSide: const BorderSide(color: AppTheme.borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: AppTheme.primaryGreen),
+                    borderSide: const BorderSide(color: AppTheme.primaryGreen),
                   ),
                 ),
               ),
@@ -118,16 +135,33 @@ class _AlarmScreenState extends State<AlarmScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (labelCtrl.text.isNotEmpty) {
-                    setState(() {
-                      _alarms.add(_AlarmItem(
-                        label: labelCtrl.text,
-                        time: selectedTime,
-                        active: true,
-                      ));
-                    });
-                    Navigator.pop(ctx);
+                    final newAlarm = AlarmModel(
+                      id: _alarmService.generateId(),
+                      title: labelCtrl.text.trim(),
+                      hour: selectedTime.hour,
+                      minute: selectedTime.minute,
+                      isEnabled: true,
+                    );
+
+                    // Schedule notifikasi
+                    await _alarmService.scheduleAlarm(newAlarm);
+
+                    // Simpan ke state & storage
+                    setState(() => _alarms.add(newAlarm));
+                    await _alarmService.saveAlarms(_alarms);
+
+                    if (ctx.mounted) Navigator.pop(ctx);
+
+                    // Feedback ke user
+                    if (mounted) {
+                      _showSnackbar(
+                        '✅ Pengingat "${newAlarm.title}" aktif — '
+                        '${newAlarm.hour.toString().padLeft(2, '0')}:'
+                        '${newAlarm.minute.toString().padLeft(2, '0')} setiap hari',
+                      );
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -150,6 +184,72 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
+  // ──────────────────────────────────────────────
+  // TOGGLE ON/OFF
+  // ──────────────────────────────────────────────
+
+  Future<void> _toggleAlarm(int index, bool value) async {
+    final alarm = _alarms[index];
+    final updated = alarm.copyWith(isEnabled: value);
+
+    setState(() => _alarms[index] = updated);
+
+    if (value) {
+      // Aktifkan — jadwalkan notifikasi
+      await _alarmService.scheduleAlarm(updated);
+      _showSnackbar(
+        '🔔 "${updated.title}" diaktifkan — '
+        '${updated.hour.toString().padLeft(2, '0')}:'
+        '${updated.minute.toString().padLeft(2, '0')} setiap hari',
+      );
+    } else {
+      // Nonaktifkan — batalkan notifikasi
+      await _alarmService.cancelAlarm(updated.id);
+      _showSnackbar('🔕 "${updated.title}" dinonaktifkan');
+    }
+
+    await _alarmService.saveAlarms(_alarms);
+  }
+
+  // ──────────────────────────────────────────────
+  // HAPUS ALARM
+  // ──────────────────────────────────────────────
+
+  Future<void> _deleteAlarm(int index) async {
+    final alarm = _alarms[index];
+
+    // Batalkan notifikasi terlebih dahulu
+    await _alarmService.cancelAlarm(alarm.id);
+
+    setState(() => _alarms.removeAt(index));
+    await _alarmService.saveAlarms(_alarms);
+
+    _showSnackbar('🗑️ "${alarm.title}" dihapus');
+  }
+
+  // ──────────────────────────────────────────────
+  // HELPER UI
+  // ──────────────────────────────────────────────
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.plusJakartaSans(fontSize: 13),
+        ),
+        backgroundColor: AppTheme.cardDark,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────────
+  // BUILD — SAMA PERSIS DENGAN UI LAMA
+  // ──────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -164,7 +264,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // Header — tidak diubah
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Row(
@@ -213,36 +313,40 @@ class _AlarmScreenState extends State<AlarmScreen> {
             const SizedBox(height: 24),
 
             Expanded(
-              child: _alarms.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.notifications_off_outlined,
-                              size: 60,
-                              color: AppTheme.textSecondary.withOpacity(0.4)),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Belum ada pengingat',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: AppTheme.textSecondary,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppTheme.primaryGreen,
                       ),
                     )
-                  : ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
-                      itemCount: _alarms.length,
-                      itemBuilder: (_, i) => _AlarmCard(
-                        alarm: _alarms[i],
-                        onToggle: (val) =>
-                            setState(() => _alarms[i].active = val),
-                        onDelete: () =>
-                            setState(() => _alarms.removeAt(i)),
-                      ),
-                    ),
+                  : _alarms.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.notifications_off_outlined,
+                                  size: 60,
+                                  color: AppTheme.textSecondary.withOpacity(0.4)),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Belum ada pengingat',
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppTheme.textSecondary,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+                          itemCount: _alarms.length,
+                          itemBuilder: (_, i) => _AlarmCard(
+                            alarm: _alarms[i],
+                            onToggle: (val) => _toggleAlarm(i, val),
+                            onDelete: () => _deleteAlarm(i),
+                          ),
+                        ),
             ),
           ],
         ),
@@ -251,28 +355,23 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 }
 
-class _AlarmItem {
-  String label;
-  TimeOfDay time;
-  bool active;
-  _AlarmItem(
-      {required this.label, required this.time, required this.active});
-}
+// ──────────────────────────────────────────────────────────────────────────────
+// _AlarmCard — Tidak ada perubahan visual, hanya tipe data diganti ke AlarmModel
+// ──────────────────────────────────────────────────────────────────────────────
 
 class _AlarmCard extends StatelessWidget {
-  final _AlarmItem alarm;
+  final AlarmModel alarm;
   final ValueChanged<bool> onToggle;
   final VoidCallback onDelete;
 
-  const _AlarmCard(
-      {required this.alarm,
-      required this.onToggle,
-      required this.onDelete});
+  const _AlarmCard({
+    required this.alarm,
+    required this.onToggle,
+    required this.onDelete,
+  });
 
-  String _formatTime(TimeOfDay t) {
-    final h = t.hour.toString().padLeft(2, '0');
-    final m = t.minute.toString().padLeft(2, '0');
-    return '$h:$m';
+  String _formatTime(int hour, int minute) {
+    return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -284,7 +383,7 @@ class _AlarmCard extends StatelessWidget {
         color: AppTheme.surfaceDark,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: alarm.active
+          color: alarm.isEnabled
               ? AppTheme.primaryGreen.withOpacity(0.3)
               : AppTheme.borderColor,
         ),
@@ -295,14 +394,14 @@ class _AlarmCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: alarm.active
+              color: alarm.isEnabled
                   ? AppTheme.primaryGreen.withOpacity(0.12)
                   : AppTheme.borderColor.withOpacity(0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               Icons.notifications_rounded,
-              color: alarm.active
+              color: alarm.isEnabled
                   ? AppTheme.primaryGreen
                   : AppTheme.textSecondary,
               size: 22,
@@ -314,22 +413,22 @@ class _AlarmCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  alarm.label,
+                  alarm.title,
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: alarm.active
+                    color: alarm.isEnabled
                         ? AppTheme.textPrimary
                         : AppTheme.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  _formatTime(alarm.time),
+                  _formatTime(alarm.hour, alarm.minute),
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: alarm.active
+                    color: alarm.isEnabled
                         ? AppTheme.primaryGreen
                         : AppTheme.textSecondary,
                   ),
@@ -340,7 +439,7 @@ class _AlarmCard extends StatelessWidget {
           Column(
             children: [
               Switch(
-                value: alarm.active,
+                value: alarm.isEnabled,
                 onChanged: onToggle,
                 activeColor: AppTheme.primaryGreen,
               ),
