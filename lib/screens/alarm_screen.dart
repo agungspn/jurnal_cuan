@@ -320,7 +320,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         children: [
                           Icon(Icons.notifications_off_outlined,
                               size: 60,
-                              color: AppTheme.textSecondary.withOpacity(0.4)),
+                              color: AppTheme.textSecondary.withValues(alpha: 0.4)),
                           const SizedBox(height: 16),
                           Text(
                             'Belum ada pengingat',
@@ -336,12 +336,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
                       itemCount: _alarms.length,
                       itemBuilder: (_, i) => _AlarmCard(
-                        alarm: _alarms[i],
-                        onToggle: (val) =>
-                            setState(() => _alarms[i].active = val),
-                        onDelete: () =>
-                            setState(() => _alarms.removeAt(i)),
-                      ),
+                      alarm: _alarms[i],
+                      onToggle: (val) => _toggleAlarm(i, val),
+                      onDelete: () => _deleteAlarm(i),
+                    ),
                     ),
             ),
           ],
@@ -379,8 +377,8 @@ class _AlarmCard extends StatelessWidget {
         color: AppTheme.surfaceDark,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: alarm.active
-              ? AppTheme.primaryGreen.withOpacity(0.3)
+          color: alarm.isEnabled
+              ? AppTheme.primaryGreen.withValues(alpha: 0.3)
               : AppTheme.borderColor,
         ),
       ),
@@ -390,9 +388,9 @@ class _AlarmCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: alarm.active
-                  ? AppTheme.primaryGreen.withOpacity(0.12)
-                  : AppTheme.borderColor.withOpacity(0.3),
+              color: alarm.isEnabled
+                  ? AppTheme.primaryGreen.withValues(alpha: 0.12)
+                  : AppTheme.borderColor.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
